@@ -16,7 +16,7 @@
 
 #define NUM_GENERATIONS 100
 
-char Grid[MAX_X_SIZE][MAX_Y_SIZE] =
+int Grid[MAX_X_SIZE][MAX_Y_SIZE] =
 {
     'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'o', 'x', 'o', 'o', 'o', 'o', 'o', 'o', 'x', 'o',
     'o', 'x', 'o', 'o', 'o', 'o', 'o', 'o', 'x', 'o', 'o', 'x', 'o', 'o', 'o', 'o', 'o', 'o', 'x', 'o',
@@ -40,10 +40,10 @@ char Grid[MAX_X_SIZE][MAX_Y_SIZE] =
     'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'x', 'o', 'o', 'o', 'o', 'o', 'o', 'x', 'o',
 };
 
-void PrintEntireGrid(char ParamGrid[MAX_X_SIZE][MAX_Y_SIZE])
+void PrintEntireGrid(int ParamGrid[MAX_X_SIZE][MAX_Y_SIZE])
 {
     HANDLE ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-    fprintf(stdout, "\r");
+
     for(int Y = 0; Y < MAX_Y_SIZE; ++Y)
     {
         for(int X = 0; X < MAX_X_SIZE; ++X)
@@ -163,11 +163,16 @@ int main(int ArgumentCount, char* Arguments[])
             }
         }
         
+        #ifdef _WIN32
         system("CLS");
+        #else
+        system("CLEAR");
+        #endif
+        
         fprintf(stdout, "\rGeneration: %i\n", Generation);
         PrintEntireGrid(Grid);
         
-        Sleep(50);
+        Sleep(1500);
         
     }
     
