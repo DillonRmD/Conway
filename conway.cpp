@@ -90,7 +90,6 @@ void Win32PrintEntireGrid(std::vector<std::vector<char>> ParamGrid)
 
 int main(int ArgumentCount, char *Arguments[])
 {
-    Sleep(4000);
     //NOTE(Dillon): Create the grid
     std::vector<std::vector<char>> Grid = RandomlyGenerateGrid(MAX_GRID_X_SIZE, MAX_GRID_Y_SIZE);
 
