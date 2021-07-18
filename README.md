@@ -9,4 +9,4 @@
  * Minor tinkering maybe required to get the build.bat to build a win32 binary
  
 # Example
-![alt text](https://i.imgur.com/tEwKdS0.gif)
+![alt text](https://i.imgur.com/3IlNng0.gif)
