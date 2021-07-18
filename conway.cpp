@@ -9,20 +9,9 @@
 #include <windows.h>
 #endif
 
-//NOTE(Dillon): This determines the Max Grid Size
-#define MAX_GRID_X_SIZE 20
-#define MAX_GRID_Y_SIZE 20
-
 //NOTE(Dillon): Macros that define what a ALIVE and DEAD cell are
 #define ALIVE 'o'
 #define DEAD 'x'
-
-//NOTE(Dillon): This determines how many generations the algorithm runs over
-#define NUM_GENERATIONS 15
-
-//NOTE(Dillon): Time to wait between generations so A.) We dont fry the CPU and B.) We can see the results of each generation
-// This also should be in milliseconds
-#define TIME_BETWEEN_GENERATIONS 1000 // 1 second
 
 //NOTE(Dillon): This function picks a number between 1 and 2.
 // on 1 the current cell is set to be alive otherwise it's dead
@@ -63,13 +52,13 @@ std::vector<std::vector<char>> RandomlyGenerateGrid(int Width, int Height)
 //NOTE(Dillon): Just iterates over the entire grid and sets colors of text determined
 // by the cell's status (i.e. DEAD or ALIVE)
 // this has to be a win32 specific function because of how I change the console colors
-void Win32PrintEntireGrid(std::vector<std::vector<char>> ParamGrid)
+void Win32PrintEntireGrid(std::vector<std::vector<char>> ParamGrid, int Width, int Height)
 {
     HANDLE ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    for (int Y = 0; Y < MAX_GRID_Y_SIZE; ++Y)
+    for (int Y = 0; Y < Height; ++Y)
     {
-        for (int X = 0; X < MAX_GRID_X_SIZE; ++X)
+        for (int X = 0; X < Width; ++X)
         {
             if (ParamGrid[X][Y] == ALIVE)
             {
@@ -90,14 +79,30 @@ void Win32PrintEntireGrid(std::vector<std::vector<char>> ParamGrid)
 
 int main(int ArgumentCount, char *Arguments[])
 {
-    //NOTE(Dillon): Create the grid
-    std::vector<std::vector<char>> Grid = RandomlyGenerateGrid(MAX_GRID_X_SIZE, MAX_GRID_Y_SIZE);
-
-    for (int Generation = 0; Generation < NUM_GENERATIONS; ++Generation)
+    if(ArgumentCount != 5)
     {
-        for (int Y = 0; Y < MAX_GRID_Y_SIZE; ++Y)
+        fprintf(stderr, "usuage: [executable] -NumGenerations -GenerationWaitTimeInMilliseconds -GridXSize -GridYSize");
+        exit(1);
+    }
+
+    unsigned int NumGenerations = atoi(Arguments[1]);
+    unsigned int GenerationWaitTimeInMilliseconds = atoi(Arguments[2]);
+    unsigned int GridXSize = atoi(Arguments[3]);
+    unsigned int GridYSize = atoi(Arguments[4]);
+
+
+    unsigned int TotalUnderpopulatedDeaths = 0;
+    unsigned int TotalOverpopulatedDeaths = 0;
+    unsigned int TotalReproducedCells = 0;
+
+    //NOTE(Dillon): Create the grid
+    std::vector<std::vector<char>> Grid = RandomlyGenerateGrid(GridXSize, GridYSize);
+
+    for (int Generation = 0; Generation < NumGenerations; ++Generation)
+    {
+        for (int Y = 0; Y < GridYSize; ++Y)
         {
-            for (int X = 0; X < MAX_GRID_X_SIZE; ++X)
+            for (int X = 0; X < GridXSize; ++X)
             {
                 //NOTE(Dillon): Before checking the proximity of the current cell we need to keep track of the ALive CellCount
                 int AliveCellCount = 0;
@@ -117,7 +122,7 @@ int main(int ArgumentCount, char *Arguments[])
                     }
                 }
 
-                if (Y < MAX_GRID_Y_SIZE - 1)
+                if (Y < GridYSize - 1)
                 {
                     if (Grid[X][Y + 1] == ALIVE) // down
                     {
@@ -125,7 +130,7 @@ int main(int ArgumentCount, char *Arguments[])
                     }
                 }
 
-                if (X < MAX_GRID_X_SIZE - 1)
+                if (X < GridXSize - 1)
                 {
                     if (Grid[X + 1][Y] == ALIVE) // right
                     {
@@ -133,7 +138,7 @@ int main(int ArgumentCount, char *Arguments[])
                     }
                 }
 
-                if (X > 0 && Y < MAX_GRID_Y_SIZE - 1)
+                if (X > 0 && Y < GridYSize - 1)
                 {
                     if (Grid[X - 1][Y + 1] == ALIVE) //bottom left
                     {
@@ -149,7 +154,7 @@ int main(int ArgumentCount, char *Arguments[])
                     }
                 }
 
-                if (X < (MAX_GRID_X_SIZE - 1) && Y > 0)
+                if (X < (GridXSize - 1) && Y > 0)
                 {
                     if (Grid[X + 1][Y - 1] == ALIVE) //upper right
                     {
@@ -157,7 +162,7 @@ int main(int ArgumentCount, char *Arguments[])
                     }
                 }
 
-                if (X < (MAX_GRID_X_SIZE - 1) && Y < (MAX_GRID_Y_SIZE - 1))
+                if (X < (GridXSize - 1) && Y < (GridYSize - 1))
                 {
                     if (Grid[X + 1][Y + 1] == ALIVE) //bottom right
                     {
@@ -168,14 +173,17 @@ int main(int ArgumentCount, char *Arguments[])
                 if (AliveCellCount < 2) // underpopulated
                 {
                     Grid[X][Y] = DEAD;
+                    TotalUnderpopulatedDeaths += 1;
                 }
                 if (AliveCellCount > 3) // overpopulated
                 {
                     Grid[X][Y] = DEAD;
+                    TotalOverpopulatedDeaths += 1;
                 }
                 if (AliveCellCount == 3) // reproduction
                 {
                     Grid[X][Y] = ALIVE;
+                    TotalReproducedCells += 1;
                 }
             }
         }
@@ -186,10 +194,11 @@ int main(int ArgumentCount, char *Arguments[])
         system("CLEAR");
 #endif
         fprintf(stdout, "Generation: %i\n", Generation);
-        Win32PrintEntireGrid(Grid);
+        Win32PrintEntireGrid(Grid, GridXSize, GridYSize);
+        fprintf(stdout, "Total Underpopulated Deaths: %i \t Total Overpopulated Deaths: %i \t Total Reproduced Cells: %i", TotalUnderpopulatedDeaths, TotalOverpopulatedDeaths, TotalReproducedCells);
 
 #ifdef _WIN32
-        Sleep(TIME_BETWEEN_GENERATIONS);
+        Sleep(GenerationWaitTimeInMilliseconds);
 #endif
     }
 
