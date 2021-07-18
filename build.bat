@@ -7,7 +7,7 @@ IF NOT EXIST build\ mkdir build\
 
 pushd build\
 
-set CommonCompilerFlags=-DDUNGEON_DEBUG -diagnostics:column -WL -nologo -fp:fast -Gm- -GR- -EHa- -Od -FC -Zi -w
+set CommonCompilerFlags=-DDUNGEON_DEBUG -diagnostics:column -WL -nologo -fp:fast -Gm- -GR- -EHa- -Od -FC -Zi -w -EHsc
 set CommonLinkerFlags= -incremental:no -opt:ref
 
 cl %CommonCompilerFlags% ..\conway.cpp -link %CommonLinkerFlags%

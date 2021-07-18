@@ -8,6 +8,5 @@
  * Win32: Simply run the build.bat script and the desired binary should be output to a newly created build directory
  * Minor tinkering maybe required to get the build.bat to build a win32 binary
  
- 
 # Example
 ![alt text](https://i.imgur.com/tEwKdS0.gif)
