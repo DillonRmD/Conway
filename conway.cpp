@@ -100,6 +100,10 @@ int main(int ArgumentCount, char *Arguments[])
 
     for (int Generation = 0; Generation < NumGenerations; ++Generation)
     {
+        unsigned int CurrentGenerationUnderpopulatedDeaths = 0;
+        unsigned int CurrentGenerationOverpopulatedDeaths = 0;
+        unsigned int CurrentGenerationReproducedCells = 0;
+
         for (int Y = 0; Y < GridYSize; ++Y)
         {
             for (int X = 0; X < GridXSize; ++X)
@@ -174,16 +178,19 @@ int main(int ArgumentCount, char *Arguments[])
                 {
                     Grid[X][Y] = DEAD;
                     TotalUnderpopulatedDeaths += 1;
+                    CurrentGenerationUnderpopulatedDeaths += 1;
                 }
                 if (AliveCellCount > 3) // overpopulated
                 {
                     Grid[X][Y] = DEAD;
                     TotalOverpopulatedDeaths += 1;
+                    CurrentGenerationOverpopulatedDeaths += 1;
                 }
                 if (AliveCellCount == 3) // reproduction
                 {
                     Grid[X][Y] = ALIVE;
                     TotalReproducedCells += 1;
+                    CurrentGenerationReproducedCells += 1;
                 }
             }
         }
@@ -195,7 +202,8 @@ int main(int ArgumentCount, char *Arguments[])
 #endif
         fprintf(stdout, "Generation: %i\n", Generation);
         Win32PrintEntireGrid(Grid, GridXSize, GridYSize);
-        fprintf(stdout, "Total Underpopulated Deaths: %i \t Total Overpopulated Deaths: %i \t Total Reproduced Cells: %i", TotalUnderpopulatedDeaths, TotalOverpopulatedDeaths, TotalReproducedCells);
+        fprintf(stdout, "Current Generation Underpopulated Deaths: %i \t Current Generation Overpopulated Deaths: %i \t Current Generation Reproduced Cells: %i\n", CurrentGenerationUnderpopulatedDeaths, CurrentGenerationOverpopulatedDeaths, CurrentGenerationReproducedCells);
+        fprintf(stdout, "Total Underpopulated Deaths: %i \t\t Total Overpopulated Deaths: %i \t\t Total Reproduced Cells: %i", TotalUnderpopulatedDeaths, TotalOverpopulatedDeaths, TotalReproducedCells);
 
 #ifdef _WIN32
         Sleep(GenerationWaitTimeInMilliseconds);
